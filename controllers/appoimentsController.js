@@ -154,7 +154,7 @@ const updateAppoiment = asyncHandler(async(req,res)=>{
     }
     duracion=service.rows[0].duracion;
     let hora = parseInt(fechayhora.split(', ')[1].split(':')[0],10);
-    if(hora < 9 || hora+duracion >20)return res.status(401).json({message:'No es una hora adecuada para generar la cita de este servicio'});
+    if(hora < 8 || hora+duracion >20)return res.status(401).json({message:'No es una hora adecuada para generar la cita de este servicio'});
     currentdate=new Date();
     if( (appoiment.rows[0].fechayhora.getDate() - currentdate.getDate()) < 3 ){
         return res.status(400).json({message:"Not allowed to change the appoiment"});
