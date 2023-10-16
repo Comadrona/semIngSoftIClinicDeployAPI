@@ -102,6 +102,7 @@ const createAppoiment = asyncHandler(async(req,res)=>{
     band=false;
     if(appoimentFree.rows){
         appoimentFree.rows.forEach((element) => {
+            console.log(element.fechayhora, typeof(element.fechayhora));
             date = new Date(element.fechayhora);
             element.fechayhora=date.toLocaleString('es-MX', { timeZone: 'America/Mexico_City' });
             hora=parseInt(element.fechayhora.split(', ')[1].split(':')[0]);
