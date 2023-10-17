@@ -60,10 +60,10 @@ const createAppoiment = asyncHandler(async(req,res)=>{
     if(!fechayhora || !user_id || !service_id){
         return res.status(400).json({message:'All fields are required'});
     }
-    let currentdate = new Date();
-    currentdate = new Intl.DateTimeFormat('es-MX', { dateStyle: 'full', timeStyle: 'long' }).format(currentdate)
-    const appoimentdate = new Date(fechayhora.split(', ')[0]+'T00:00:00');
-    console.log(currentdate, appoimentdate.toLocaleString('es-MX'))
+    let currentdate = new Date()
+    currentdate=currentdate.setDate(currentdate.getDate()-1)
+    const appoimentdate = new Date(fechayhora.split(', ')[0]+'T00:00:00')
+    console.log(currentdate.toLocaleString('es-MX'), appoimentdate.toLocaleString('es-MX'))
     if(currentdate>appoimentdate){
         return res.status(401).json({message:'No  se puede registrar una cita con esa fecha'});
     }
