@@ -77,7 +77,7 @@ const createAppoiment = asyncHandler(async(req,res)=>{
         return res.status(401).json({message:'No existe el servicio'});
     }
     duracion=service.rows[0].duracion;
-    let hora = parseInt(fechayhora.split(', ')[1].split(':')[0],10);
+    let hora = parseInt(fechayhora.split(' ')[1].split(':')[0],10);
     if(hora < 8 || hora+duracion >20)return res.status(401).json({message:'No es una hora adecuada para generar la cita de este servicio'});
     const user = await pool.query("SELECT * FROM users WHERE user_id = $1",
     [user_id]);
@@ -105,7 +105,7 @@ const createAppoiment = asyncHandler(async(req,res)=>{
             appoimentdateday=new Date(appoimentFree.rows[i].fechayhora)
             appoimentdatedaystr=appoimentdateday.toLocaleString('es-MX')
             console.log(appoimentdatedaystr)
-            hora=parseInt(appoimentdatedaystr.split(', ')[1].split(':')[0]);
+            hora=parseInt(appoimentdatedaystr.split(' ')[1].split(':')[0]);
             horasdecita2.push(parseInt(hora));
             appdura=appoimentFree.rows[i].duracion
             for(let o=1;o<appdura;o++)horasdecita2.push(parseInt(hora)+i);
@@ -184,7 +184,7 @@ const updateAppoiment = asyncHandler(async(req,res)=>{
         for(let i=0;i<appoimentFree.rowCount;i++){
             appoimentdateday=new Date(appoimentFree.rows[i].fechayhora)
             appoimentdatedaystr=appoimentdateday.toLocaleString('es-MX')
-            hora=parseInt(appoimentdatedaystr.split(', ')[1].split(':')[0]);
+            hora=parseInt(appoimentdatedaystr.split(' ')[1].split(':')[0]);
             horasdecita2.push(parseInt(hora));
             appdura=appoimentFree.rows[i].duracion
             for(let o=1;o<appdura;o++)horasdecita2.push(parseInt(hora)+i);
@@ -240,7 +240,7 @@ const verificarTiempos = (time,duracion,appoiments)=>{
     for(let i=0;i<duracion;i++)horasdecita.push(time+i);
     horasdecita2=Array();
     for(let tryhour=0;tryhour<appoiments.length;tryhour++){
-        hora = parseInt(appoiments[tryhour].fechayhora.toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }).split(', ')[1].split(':')[0]);
+        hora = parseInt(appoiments[tryhour].fechayhora.toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }).split(' ')[1].split(':')[0]);
         for(let i=0;i<parseInt(appoiments[tryhour].duracion);i++)horasdecita2.push(hora+i);
         for(let horacita2=0;horacita2<horasdecita2;horacita2++){
             if(horasdecita.includes(horasdecita2[horacita2])){
