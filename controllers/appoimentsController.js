@@ -307,7 +307,7 @@ const createAutomaticAppoiment = asyncHandler(async(req,res)=>{
     }
     console.log(appoimentdays)
     for(let day=0;day<appoimentdays.length;day++){
-        processdate = appoimentdays[day].toLocaleString('eu-ES').split(", ")[0];
+        processdate = appoimentdays[day].toLocaleString('eu-ES').split(" ")[0];
         console.log(processdate)
         const appoiments = await pool.query("SELECT appoiments.fechayhora AT TIME ZONE 'America/Mexico_City' AS fechayhora,services.duracion FROM appoiments JOIN services ON appoiments.service_id = services.service_id WHERE DATE(appoiments.fechayhora) = $1 ORDER BY appoiments.fechayhora;",[processdate]);
         if(appoiments.rowCount === 0 ){
