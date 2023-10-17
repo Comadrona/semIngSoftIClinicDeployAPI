@@ -63,7 +63,6 @@ const createAppoiment = asyncHandler(async(req,res)=>{
     let currentdate = new Date()
     currentdate.setDate(currentdate.getDate()-1)
     const appoimentdate = new Date(fechayhora.split(', ')[0]+'T00:00:00')
-    console.log(currentdate.toLocaleString('es-MX'), appoimentdate.toLocaleString('es-MX'))
     if(currentdate>appoimentdate){
         return res.status(401).json({message:'No  se puede registrar una cita con esa fecha'});
     }
@@ -98,41 +97,32 @@ const createAppoiment = asyncHandler(async(req,res)=>{
     horacita=fechayhora.split(' ')[1].split(':')[0];
     horasdecita=Array();
     horasdecita2=Array();
+    let appoimentdateday = new Date();
     horasdecita.push(parseInt(horacita));
     for(let i=1;i<duracion;i++)horasdecita.push(parseInt(horacita)+i);
     band=false;
     if(appoimentFree.rowCount !== 0){
-        appoimentFree.rows.forEach((element) => {
-            console.log(element.fechayhora, typeof(element.fechayhora));
-            date = new Date(element.fechayhora);
-            element.fechayhora=date.toLocaleString('es-MX', { timeZone: 'America/Mexico_City' });
-            console.log(element.fechayhora, typeof(element.fechayhora));
-            hora=parseInt(element.fechayhora.split(', ')[1].split(':')[0]);
-            horasdecita2.push(parseInt(hora));
-            for(let i=1;i<parseInt(element.duracion);i++)horasdecita2.push(parseInt(hora)+i);
-            horasdecita2.forEach((element)=>{
-                if(horasdecita.includes(element)){
-                    band=true;
-                    return true;
-                }
-            });
-            horasdecita2=[]
-            if(band)return true;
-        });
+        for(let i=0;i<appoimentFree.rowCount;i++){
+            console.log(i,'pg: ',appoimentFree.rows[i].fechayhora);
+            appoimentdateday.setDate(appoimentFree.rows[i].fechayhora)
+            console.log(i,'jsdate: ',appoimentdateday.toLocaleString('es-MX'))
+        }
+    }else{
+        const newappoiment = await pool.query(
+            "INSERT INTO appoiments(fechayhora,user_id,service_id) VALUES($1,$2,$3) RETURNING *",
+            [fechayhora,user_id,service_id]
+        );
+        if(newappoiment.rowCount === 0){
+            return res.status(400).json({message:"Not appoiment created"});
+        }
+        
+        return res.json(
+            Object.assign({},{message:true},newappoiment.rows[0])
+        );
     }
     if(band)return res.status(400).json({message:'No existe el espacio'});
     
-    const newappoiment = await pool.query(
-        "INSERT INTO appoiments(fechayhora,user_id,service_id) VALUES($1,$2,$3) RETURNING *",
-        [fechayhora,user_id,service_id]
-    );
-    if(!newappoiment.rows){
-        return res.status(400).json({message:"Not appoiment created"});
-    }
     
-    return res.json(
-        Object.assign({},{message:true},newappoiment.rows[0])
-    );
 });
 
 //@desc Update an appoiment
