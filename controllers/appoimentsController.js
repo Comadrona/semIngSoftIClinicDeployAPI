@@ -97,20 +97,29 @@ const createAppoiment = asyncHandler(async(req,res)=>{
     horacita=fechayhora.split(' ')[1].split(':')[0];
     horasdecita=Array();
     horasdecita2=Array();
-    let appoimentdateday = new Date();
+    let appoimentdateday;
     horasdecita.push(parseInt(horacita));
     for(let i=1;i<duracion;i++)horasdecita.push(parseInt(horacita)+i);
     band=false;
     if(appoimentFree.rowCount !== 0){
         for(let i=0;i<appoimentFree.rowCount;i++){
-            console.log(i,'pg: ',appoimentFree.rows[i].fechayhora);
-            appoimentdateday.setDate(appoimentFree.rows[i].fechayhora)
-            console.log(i,'jsdate: ',appoimentdateday.toLocaleString('es-MX'))
+            appoimentdateday=new Date(appoimentFree.rows[i].fechayhora)
+            appoimentdatedaystr=appoimentdateday.toLocaleString('es-MX')
+            hora=parseInt(appoimentdatedaystr.split(', ')[1].split(':')[0]);
+            horasdecita2.push(parseInt(hora));
+            appdura=appoimentFree.rows[i].duracion
+            for(let o=1;o<appdura;o++)horasdecita2.push(parseInt(hora)+i);
+            for(let o=0;o<horasdecita2.length;o++){
+                if(horasdecita.includes(horasdecita2[o])){
+                    return res.status(400).json({message:'No existe el espacio'});
+                }
+            }
         }
-    }else{
+    }
+        
         const newappoiment = await pool.query(
             "INSERT INTO appoiments(fechayhora,user_id,service_id) VALUES($1,$2,$3) RETURNING *",
-            [fechayhora,user_id,service_id]
+            [fechayhora+'-06',user_id,service_id]
         );
         if(newappoiment.rowCount === 0){
             return res.status(400).json({message:"Not appoiment created"});
@@ -119,9 +128,6 @@ const createAppoiment = asyncHandler(async(req,res)=>{
         return res.json(
             Object.assign({},{message:true},newappoiment.rows[0])
         );
-    }
-    if(band)return res.status(400).json({message:'No existe el espacio'});
-    
     
 });
 
