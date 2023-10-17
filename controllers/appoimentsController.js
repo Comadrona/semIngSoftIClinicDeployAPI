@@ -162,7 +162,8 @@ const updateAppoiment = asyncHandler(async(req,res)=>{
     if(hora < 8 || hora+duracion >20)return res.status(401).json({message:'No es una hora adecuada para generar la cita de este servicio'});
     currentdate=new Date();
     currentdate.setDate(currentdate.getDate()-1)
-    if( (appoiment.rows[0].fechayhora.getDate() - currentdate.getDate()-2) < 3 ){
+    diff = Math.floor((appoiment.rows[0].fechayhora.getTime() - currentdate.getTime())/1000 / 60 / 60 / 24)
+    if( diff <= 3 ){
         return res.status(400).json({message:"Not allowed to change the appoiment"});
     }
     const appoimentdate = new Date(fechayhora.split(', ')[0])
@@ -219,8 +220,10 @@ const deleteAppoiment = asyncHandler(async(req,res)=>{
         return res.status(400).json({message:'Appoiment not found'});
     }
     currentdate=new Date();
-    if( (appoiment.rows[0].fechayhora.getDate() - currentdate.getDate()) < 3 ){
-        return res.status(400).json({message:"Not allowed to delete the appoiment"});
+    currentdate.setDate(currentdate.getDate()-1)
+    diff = Math.floor((appoiment.rows[0].fechayhora.getTime() - currentdate.getTime())/1000 / 60 / 60 / 24)
+    if( diff <= 3 ){
+        return res.status(400).json({message:"Not allowed to change the appoiment"});
     }
     const updateAppoimentquery = await pool.query(
         "UPDATE appoiments SET estado = $1 WHERE appoiment_id = $2 RETURNING *",
