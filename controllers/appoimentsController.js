@@ -296,6 +296,7 @@ const createAutomaticAppoiment = asyncHandler(async(req,res)=>{
     }
     for(let i = 1;i<=duracion;i++)appoimenttimes.pop()
     let currentdate = new Date();
+    currentdate.setDate(currentdate.getDate()-1)
     let appoimentdays = [];
     let auxdate = new Date();
     let i = 1;
@@ -303,15 +304,17 @@ const createAutomaticAppoiment = asyncHandler(async(req,res)=>{
         auxdate.setDate(currentdate.getDate()+i);i++;
         if(auxdate.getDay()!==0)appoimentdays.push(new Date(auxdate))
     }
+    console.log(appoimentdays)
     for(let day=0;day<appoimentdays.length;day++){
-        processdate = appoimentdays[day].toLocaleString('es-MX', { timeZone: 'America/Mexico_City' }).split(", ")[0];
+        processdate = appoimentdays[day].toLocaleString('eu-ES').split(", ")[0];
+        console.log(processdate)
         const appoiments = await pool.query("SELECT appoiments.fechayhora AT TIME ZONE 'America/Mexico_City' AS fechayhora,services.duracion FROM appoiments JOIN services ON appoiments.service_id = services.service_id WHERE DATE(appoiments.fechayhora) = $1 ORDER BY appoiments.fechayhora;",[processdate]);
         if(appoiments.rowCount === 0 ){
             hora = String(appoimenttimes[0])+":00:00"
             processdate+=", "+hora;
             const newappoiment = await pool.query(
                 "INSERT INTO appoiments(fechayhora,user_id,service_id) VALUES($1,$2,$3) RETURNING *",
-                [processdate,user_id,service_id]
+                [processdate+'-06',user_id,service_id]
             );
             if(newappoiment.rowCount===0){
                 return res.status(400).json({message:"Not appoiment created"});
@@ -327,7 +330,7 @@ const createAutomaticAppoiment = asyncHandler(async(req,res)=>{
                     processdate+=", "+hora;
                     const newappoiment = await pool.query(
                         "INSERT INTO appoiments(fechayhora,user_id,service_id) VALUES($1,$2,$3) RETURNING *",
-                        [processdate,user_id,service_id]
+                        [processdate+'-06',user_id,service_id]
                     );
                     if(newappoiment.rowCount===0){
                         return res.status(400).json({message:"Not appoiment created"});
