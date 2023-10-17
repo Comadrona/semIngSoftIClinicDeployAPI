@@ -61,7 +61,7 @@ const createAppoiment = asyncHandler(async(req,res)=>{
         return res.status(400).json({message:'All fields are required'});
     }
     let currentdate = new Date()
-    currentdate=currentdate.setDate(currentdate.getDate()-1)
+    currentdate.setDate(currentdate.getDate()-1)
     const appoimentdate = new Date(fechayhora.split(', ')[0]+'T00:00:00')
     console.log(currentdate.toLocaleString('es-MX'), appoimentdate.toLocaleString('es-MX'))
     if(currentdate>appoimentdate){
