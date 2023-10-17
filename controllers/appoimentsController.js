@@ -105,6 +105,7 @@ const createAppoiment = asyncHandler(async(req,res)=>{
             console.log(element.fechayhora, typeof(element.fechayhora));
             date = new Date(element.fechayhora);
             element.fechayhora=date.toLocaleString('es-MX', { timeZone: 'America/Mexico_City' });
+            console.log(element.fechayhora, typeof(element.fechayhora));
             hora=parseInt(element.fechayhora.split(', ')[1].split(':')[0]);
             horasdecita2.push(parseInt(hora));
             for(let i=1;i<parseInt(element.duracion);i++)horasdecita2.push(parseInt(hora)+i);
