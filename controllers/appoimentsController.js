@@ -61,8 +61,8 @@ const createAppoiment = asyncHandler(async(req,res)=>{
         return res.status(400).json({message:'All fields are required'});
     }
     let currentdate = new Date();
-    const appoimentdate = new Date(fechayhora.split(', ')[0]);
-    console.log(currentdate, appoimentdate)
+    const appoimentdate = new Date(fechayhora.split(', ')[0]+'T00:00:00');
+    console.log(currentdate.toLocaleString('es-MX'), appoimentdate.toLocaleString('es-MX'))
     if(currentdate>appoimentdate){
         return res.status(401).json({message:'No  se puede registrar una cita con esa fecha'});
     }
@@ -100,7 +100,7 @@ const createAppoiment = asyncHandler(async(req,res)=>{
     horasdecita.push(parseInt(horacita));
     for(let i=1;i<duracion;i++)horasdecita.push(parseInt(horacita)+i);
     band=false;
-    if(appoimentFree.rows){
+    if(appoimentFree.rowCount !== 0){
         appoimentFree.rows.forEach((element) => {
             console.log(element.fechayhora, typeof(element.fechayhora));
             date = new Date(element.fechayhora);
