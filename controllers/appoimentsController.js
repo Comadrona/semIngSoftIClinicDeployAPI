@@ -104,6 +104,7 @@ const createAppoiment = asyncHandler(async(req,res)=>{
         for(let i=0;i<appoimentFree.rowCount;i++){
             appoimentdateday=new Date(appoimentFree.rows[i].fechayhora)
             appoimentdatedaystr=appoimentdateday.toLocaleString('es-MX')
+            console.log(appoimentdatedaystr)
             hora=parseInt(appoimentdatedaystr.split(', ')[1].split(':')[0]);
             horasdecita2.push(parseInt(hora));
             appdura=appoimentFree.rows[i].duracion
