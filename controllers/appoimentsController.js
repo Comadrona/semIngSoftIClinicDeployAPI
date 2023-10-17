@@ -62,7 +62,7 @@ const createAppoiment = asyncHandler(async(req,res)=>{
     }
     let currentdate = new Date()
     currentdate.setDate(currentdate.getDate()-1)
-    const appoimentdate = new Date(fechayhora.split(', ')[0]+'T00:00:00')
+    const appoimentdate = new Date(fechayhora.split(', ')[0])
     if(currentdate>appoimentdate){
         return res.status(401).json({message:'No  se puede registrar una cita con esa fecha'});
     }
@@ -100,7 +100,6 @@ const createAppoiment = asyncHandler(async(req,res)=>{
     let appoimentdateday;
     horasdecita.push(parseInt(horacita));
     for(let i=1;i<duracion;i++)horasdecita.push(parseInt(horacita)+i);
-    band=false;
     if(appoimentFree.rowCount !== 0){
         for(let i=0;i<appoimentFree.rowCount;i++){
             appoimentdateday=new Date(appoimentFree.rows[i].fechayhora)
@@ -138,6 +137,13 @@ const createAppoiment = asyncHandler(async(req,res)=>{
     9-20
 */
 const updateAppoiment = asyncHandler(async(req,res)=>{
+    /*
+    body esqueleto
+    {
+        "fechayhora":"2023/10/20, 14:00:00", 
+        "appoiment_id":36
+    }
+    */
     const {fechayhora,appoiment_id}=req.body;
     if(!fechayhora|| !appoiment_id){
         return res.status(400).json({message:'All fields are required'});
@@ -155,11 +161,11 @@ const updateAppoiment = asyncHandler(async(req,res)=>{
     let hora = parseInt(fechayhora.split(', ')[1].split(':')[0],10);
     if(hora < 8 || hora+duracion >20)return res.status(401).json({message:'No es una hora adecuada para generar la cita de este servicio'});
     currentdate=new Date();
-    if( (appoiment.rows[0].fechayhora.getDate() - currentdate.getDate()) < 3 ){
+    currentdate.setDate(currentdate.getDate()-1)
+    if( (appoiment.rows[0].fechayhora.getDate() - currentdate.getDate()-2) < 3 ){
         return res.status(400).json({message:"Not allowed to change the appoiment"});
     }
-    const appoimentdate = new Date(fechayhora.split(', ')[0]);
-    console.log(currentdate, appoimentdate)
+    const appoimentdate = new Date(fechayhora.split(', ')[0])
     if(currentdate>appoimentdate){
         return res.status(401).json({message:'No  se puede registrar una cita con esa fecha'});
     }
@@ -172,30 +178,24 @@ const updateAppoiment = asyncHandler(async(req,res)=>{
     horasdecita2=Array();
     horasdecita.push(parseInt(horacita));
     for(let i=1;i<duracion;i++)horasdecita.push(parseInt(horacita)+i);
-    band=false;
-    if(appoimentFree.rows){
-        appoimentFree.rows.forEach((element) => {
-            date = new Date(element.fechayhora);
-            element.fechayhora=date.toLocaleString('es-MX', { timeZone: 'America/Mexico_City' });
-            hora=parseInt(element.fechayhora.split(', ')[1].split(':')[0]);
+    if(appoimentFree.rowCount !== 0){
+        for(let i=0;i<appoimentFree.rowCount;i++){
+            appoimentdateday=new Date(appoimentFree.rows[i].fechayhora)
+            appoimentdatedaystr=appoimentdateday.toLocaleString('es-MX')
+            hora=parseInt(appoimentdatedaystr.split(', ')[1].split(':')[0]);
             horasdecita2.push(parseInt(hora));
-            for(let i=1;i<parseInt(element.duracion);i++)horasdecita2.push(parseInt(hora)+i);
-            horasdecita2.forEach((element2)=>{
-                if(horasdecita.includes(element2) && (element.appoiment_id !== appoiment_id)){
-                    console.log(appoiment_id);
-                    console.log(element);
-                    band=true;
-                    return true;
+            appdura=appoimentFree.rows[i].duracion
+            for(let o=1;o<appdura;o++)horasdecita2.push(parseInt(hora)+i);
+            for(let o=0;o<horasdecita2.length;o++){
+                if(horasdecita.includes(horasdecita2[o]) && (appoimentFree.rows[i].appoiment_id !== appoiment_id)){
+                    return res.status(400).json({message:'No existe el espacio'});
                 }
-            });
-            if(band)return true;
-        });
+            }
+        }
     }
-    if(band)return res.status(400).json({message:'No existe el espacio'});
-    
     const newappoiment = await pool.query(
         "UPDATE appoiments SET fechayhora = $1  WHERE appoiment_id = $2 RETURNING *",
-        [fechayhora,appoiment_id]
+        [fechayhora+'-06',appoiment_id]
     );
     if(!newappoiment.rows){
         return res.status(400).json({message:"Not appoiment updated"});
