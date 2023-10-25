@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcrypt');
 const pool = require('../database/db')
+const sendEmail = require('../nodemailer/sendEmail')
 
 //@desc Get all appoiments
 //@route get /appoiment
@@ -124,7 +125,10 @@ const createAppoiment = asyncHandler(async(req,res)=>{
         if(newappoiment.rowCount === 0){
             return res.status(400).json({message:"Not appoiment created"});
         }
-        
+    sendEmail(user.rows[0].correo,
+        `Haz creado una cita para realizarte un procedimiento de ${service.rows[0].nombre}
+        Toma en cuenta la duracion de al menos ${service.rows[0].duracion}
+        La cita fue registrada para ${fechayhora}`)
         return res.json(
             Object.assign({},{message:true},newappoiment.rows[0])
         );
@@ -202,7 +206,10 @@ const updateAppoiment = asyncHandler(async(req,res)=>{
     if(!newappoiment.rows){
         return res.status(400).json({message:"Not appoiment updated"});
     }
-    
+    sendEmail(user.rows[0].correo,
+        `Haz modificado una cita para realizarte un procedimiento de ${service.rows[0].nombre}
+        Toma en cuenta la duracion de al menos ${service.rows[0].duracion}
+        La cita fue registrada para ${fechayhora}`);
     return res.json(
         Object.assign({},{message:true},newappoiment.rows[0])
     );
@@ -233,6 +240,8 @@ const deleteAppoiment = asyncHandler(async(req,res)=>{
     if(!updateAppoimentquery.rows){
         return res.status(400).json({message:"Not appoiment deleted"});
     }
+    sendEmail(user.rows[0].correo,
+        `Haz cancelado una cita para realizarte un procedimiento de ${service.rows[0].nombre}`);
     res.json({message:"Appoiment deleted"});
 });
 const verificarTiempos = (time,duracion,appoiments)=>{
@@ -320,7 +329,10 @@ const createAutomaticAppoiment = asyncHandler(async(req,res)=>{
             if(newappoiment.rowCount===0){
                 return res.status(400).json({message:"Not appoiment created"});
             }
-            
+            sendEmail(user.rows[0].correo,
+                `Haz creado una cita para realizarte un procedimiento de ${service.rows[0].nombre}
+                Toma en cuenta la duracion de al menos ${service.rows[0].duracion}
+                La cita fue registrada para ${processdate}`);
             return res.json(
                 Object.assign({},{message:true},newappoiment.rows[0])
             );
@@ -336,7 +348,10 @@ const createAutomaticAppoiment = asyncHandler(async(req,res)=>{
                     if(newappoiment.rowCount===0){
                         return res.status(400).json({message:"Not appoiment created"});
                     }
-                    
+                    sendEmail(user.rows[0].correo,
+                        `Haz creado una cita para realizarte un procedimiento de ${service.rows[0].nombre}
+                        Toma en cuenta la duracion de al menos ${service.rows[0].duracion}
+                        La cita fue registrada para ${processdate}`);
                     return res.json(
                         Object.assign({},{message:true},newappoiment.rows[0])
                     );
