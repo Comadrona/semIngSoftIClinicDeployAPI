@@ -127,7 +127,7 @@ const createAppoiment = asyncHandler(async(req,res)=>{
         }
     sendEmail(user.rows[0].correo,
         `Haz creado una cita para realizarte un procedimiento de ${service.rows[0].nombre}
-        Toma en cuenta la duracion de al menos ${service.rows[0].duracion}
+        Toma en cuenta la duracion de al menos ${service.rows[0].duracion} hora(s)
         La cita fue registrada para ${fechayhora}`)
         return res.json(
             Object.assign({},{message:true},newappoiment.rows[0])
@@ -208,7 +208,7 @@ const updateAppoiment = asyncHandler(async(req,res)=>{
     }
     sendEmail(user.rows[0].correo,
         `Haz modificado una cita para realizarte un procedimiento de ${service.rows[0].nombre}
-        Toma en cuenta la duracion de al menos ${service.rows[0].duracion}
+        Toma en cuenta la duracion de al menos ${service.rows[0].duracion} hora(s)
         La cita fue registrada para ${fechayhora}`);
     return res.json(
         Object.assign({},{message:true},newappoiment.rows[0])
@@ -331,7 +331,7 @@ const createAutomaticAppoiment = asyncHandler(async(req,res)=>{
             }
             sendEmail(user.rows[0].correo,
                 `Haz creado una cita para realizarte un procedimiento de ${service.rows[0].nombre}
-                Toma en cuenta la duracion de al menos ${service.rows[0].duracion}
+                Toma en cuenta la duracion de al menos ${service.rows[0].duracion} hora(s)
                 La cita fue registrada para ${processdate}`);
             return res.json(
                 Object.assign({},{message:true},newappoiment.rows[0])
@@ -350,7 +350,7 @@ const createAutomaticAppoiment = asyncHandler(async(req,res)=>{
                     }
                     sendEmail(user.rows[0].correo,
                         `Haz creado una cita para realizarte un procedimiento de ${service.rows[0].nombre}
-                        Toma en cuenta la duracion de al menos ${service.rows[0].duracion}
+                        Toma en cuenta la duracion de al menos ${service.rows[0].duracion} hora(s)
                         La cita fue registrada para ${processdate}`);
                     return res.json(
                         Object.assign({},{message:true},newappoiment.rows[0])
