@@ -24,7 +24,6 @@ module.exports = asyncHandler(async()=>{
     appoiments.rows.forEach((element) => {
         date = new Date(element.fechayhora);
         element.fechayhora=date.toLocaleString('es-MX', { timeZone: 'America/Mexico_City' });
-        console.log(element);
         sendEmail(element.correo,`
         Recuerda que el dia de mañana tienes una cita
         Tu cita es para realizarte un procedimiento de ${service.rows[0].nombre}

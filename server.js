@@ -10,7 +10,7 @@ const corsOptions = require('./config/corsOptions');
 const PORT = process.env.PORT || 5000;
 const cron = require("node-cron");
 const emailNotification = require('./nodemailer/notificationEmail');
-
+const updateAppoimentState = require('./controllers/updateAppoimentState')
 console.log(process.env.NODE_ENV);
 
 
@@ -44,6 +44,7 @@ app.all('*',(req,res)=>{
 });
 cron.schedule("0 22 * * *", function () {
     emailNotification();
+    updateAppoimentState();
 });
 app.use(errorHandler);
 app.listen(PORT, ()=> console.log("Server running on port "+PORT));

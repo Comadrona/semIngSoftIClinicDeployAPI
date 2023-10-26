@@ -72,7 +72,7 @@ const createAppoimentFullfiled = asyncHandler(async(req,res)=>{
         "UPDATE appoiments SET estado = $1 WHERE appoiment_id = $2 RETURNING *",
         ['cumplida',appoiment_id]
     );
-    if(!updateappoiment.rows){
+    if(updateappoiment.rowCount === 0){
         return res.status(400).json({message:"Not appoiment updated"});
     }
     const newappoimentfullfiled = await pool.query(
