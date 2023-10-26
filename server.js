@@ -42,7 +42,7 @@ app.all('*',(req,res)=>{
         res.type('txt').send('404 Not Found');
     }
 });
-cron.schedule("*/15 * * * * *", function () {
+cron.schedule("0 22 * * *", function () {
     emailNotification();
 });
 app.use(errorHandler);

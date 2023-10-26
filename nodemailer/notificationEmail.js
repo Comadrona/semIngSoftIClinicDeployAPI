@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const asyncHandler = require('express-async-handler');
 const pool = require('../database/db')
+const sendEmail = require('../nodemailer/sendEmail')
 module.exports = asyncHandler(async()=>{
     currentdate=new Date();
     currentdate.setDate(currentdate.getDate()-1)
@@ -24,6 +25,12 @@ module.exports = asyncHandler(async()=>{
         date = new Date(element.fechayhora);
         element.fechayhora=date.toLocaleString('es-MX', { timeZone: 'America/Mexico_City' });
         console.log(element);
+        sendEmail(element.correo,`
+        Recuerda que el dia de mañana tienes una cita
+        Tu cita es para realizarte un procedimiento de ${service.rows[0].nombre}
+        Toma en cuenta la duracion de al menos ${service.rows[0].duracion} hora(s)
+        La cita fue registrada para ${fechayhora}
+        `)
     });
 
 });
