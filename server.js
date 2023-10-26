@@ -45,6 +45,8 @@ app.all('*',(req,res)=>{
 cron.schedule("0 22 * * *", function () {
     emailNotification();
     updateAppoimentState();
+},{
+    timezone:'America/Mexico_City'
 });
 app.use(errorHandler);
 app.listen(PORT, ()=> console.log("Server running on port "+PORT));
