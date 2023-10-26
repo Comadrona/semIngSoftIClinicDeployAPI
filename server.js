@@ -8,6 +8,8 @@ const cookieParser = require('cookie-parser');
 const cors=require('cors');
 const corsOptions = require('./config/corsOptions');
 const PORT = process.env.PORT || 5000;
+const cron = require("node-cron");
+const emailNotification = require('./nodemailer/notificationEmail');
 
 console.log(process.env.NODE_ENV);
 
@@ -40,6 +42,8 @@ app.all('*',(req,res)=>{
         res.type('txt').send('404 Not Found');
     }
 });
-
+cron.schedule("*/15 * * * * *", function () {
+    emailNotification();
+});
 app.use(errorHandler);
 app.listen(PORT, ()=> console.log("Server running on port "+PORT));
