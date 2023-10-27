@@ -4,7 +4,7 @@ const pool = require('../database/db')
 const sendEmail = require('../nodemailer/sendEmail')
 module.exports = asyncHandler(async()=>{
     currentdate=new Date();
-    currentdate.setDate(currentdate.getDate()-1)
+    currentdate.setDate(currentdate.getDate())
     const sql = `
     SELECT users.correo,appoiments.appoiment_id,services.nombre,services.duracion,services.descripcion,appoiments.fechayhora
     FROM users
