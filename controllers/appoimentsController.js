@@ -233,6 +233,8 @@ const deleteAppoiment = asyncHandler(async(req,res)=>{
     if( diff <= 3 ){
         return res.status(400).json({message:"Not allowed to change the appoiment"});
     }
+    const user = await pool.query("SELECT * FROM users WHERE user_id = $1",
+    [appoiment.rows[0].user_id]);
     const updateAppoimentquery = await pool.query(
         "UPDATE appoiments SET estado = $1 WHERE appoiment_id = $2 RETURNING *",
         ["cancelada",appoiment_id]
