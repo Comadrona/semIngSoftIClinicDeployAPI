@@ -199,6 +199,8 @@ const updateAppoiment = asyncHandler(async(req,res)=>{
             }
         }
     }
+    const user = await pool.query("SELECT * FROM users WHERE user_id = $1",
+    [appoiment.rows[0].user_id]);
     const newappoiment = await pool.query(
         "UPDATE appoiments SET fechayhora = $1  WHERE appoiment_id = $2 RETURNING *",
         [fechayhora+'-06',appoiment_id]
