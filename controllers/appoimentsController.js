@@ -243,7 +243,7 @@ const deleteAppoiment = asyncHandler(async(req,res)=>{
         return res.status(400).json({message:"Not appoiment deleted"});
     }
     sendEmail(user.rows[0].correo,
-        `Haz cancelado una cita para realizarte un procedimiento de ${service.rows[0].nombre}`);
+        `Haz cancelado una cita para realizarte un procedimiento.`);
     res.json({message:"Appoiment deleted"});
 });
 const verificarTiempos = (time,duracion,appoiments)=>{
