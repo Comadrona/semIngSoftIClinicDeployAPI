@@ -329,7 +329,7 @@ const createAutomaticAppoiment = asyncHandler(async(req,res)=>{
     currentdate.setDate(currentdate.getDate()-1)
     let appoimentdays = [];
     let auxdate = new Date();
-    let i = 1;
+    let i = 2;
     while(appoimentdays.length<3){
         auxdate.setDate(currentdate.getDate()+i);i++;
         if(auxdate.getDay()!==0)appoimentdays.push(new Date(auxdate))
