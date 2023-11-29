@@ -1,5 +1,4 @@
 const asyncHandler = require('express-async-handler');
-const bcrypt = require('bcrypt');
 const pool = require('../database/db')
 const sendEmail = require('../nodemailer/sendEmail')
 
