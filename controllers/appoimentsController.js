@@ -157,6 +157,15 @@ const updateAppoiment = asyncHandler(async(req,res)=>{
     if(appoiment.rowCount === 0){
         return res.status(400).json({message:'Appoiment not found'});
     }
+    const user = await pool.query("SELECT * FROM users WHERE user_id = $1",
+    [appoiment.rows[0].user_id]);
+    if(user.rowCount===0){
+        return res.status(401).json({message:'No existe el usuario'});
+    }else if(user.rows[0].correo === null){
+        return res.status(401).json({message:'El usuario no esta disponible'});
+    }else if(user.rows[0].administrador){
+        return res.status(401).json({message:'El usuario no puede recibir consultas'});
+    }
     const service = await pool.query("SELECT * FROM services WHERE service_id = $1",
     [appoiment.rows[0].service_id]);
     if(!service.rowCount){
@@ -199,8 +208,7 @@ const updateAppoiment = asyncHandler(async(req,res)=>{
             }
         }
     }
-    const user = await pool.query("SELECT * FROM users WHERE user_id = $1",
-    [appoiment.rows[0].user_id]);
+    
     const newappoiment = await pool.query(
         "UPDATE appoiments SET fechayhora = $1  WHERE appoiment_id = $2 RETURNING *",
         [fechayhora+'-06',appoiment_id]
@@ -229,14 +237,22 @@ const deleteAppoiment = asyncHandler(async(req,res)=>{
     if(appoiment.rowCount === 0){
         return res.status(400).json({message:'Appoiment not found'});
     }
+    const user = await pool.query("SELECT * FROM users WHERE user_id = $1",
+    [appoiment.rows[0].user_id]);
+    if(user.rowCount===0){
+        return res.status(401).json({message:'No existe el usuario'});
+    }else if(user.rows[0].correo === null){
+        return res.status(401).json({message:'El usuario no esta disponible'});
+    }else if(user.rows[0].administrador){
+        return res.status(401).json({message:'El usuario no puede recibir consultas'});
+    }
     currentdate=new Date();
     currentdate.setDate(currentdate.getDate()-1)
     diff = Math.floor((appoiment.rows[0].fechayhora.getTime() - currentdate.getTime())/1000 / 60 / 60 / 24)
     if( diff <= 3 ){
         return res.status(400).json({message:"Not allowed to change the appoiment"});
     }
-    const user = await pool.query("SELECT * FROM users WHERE user_id = $1",
-    [appoiment.rows[0].user_id]);
+    
     const updateAppoimentquery = await pool.query(
         "UPDATE appoiments SET estado = $1 WHERE appoiment_id = $2 RETURNING *",
         ["cancelada",appoiment_id]
