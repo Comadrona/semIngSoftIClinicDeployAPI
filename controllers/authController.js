@@ -13,6 +13,8 @@ const login = asyncHandler(async(req,res)=>{
     const user = await pool.query("SELECT * FROM users WHERE username = $1",[username]);
     if(user.rowCount===0){
         return res.status(401).json({message:"Not user found"});
+    }else if(user.rows[0].correo === null){
+        return res.status(401).json({message:"Not user found"});
     }
     const match = await bcrypt.compare(password, user.rows[0].password)
 
